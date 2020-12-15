@@ -3,6 +3,7 @@ import cv2 as cv
 learning_rate = -1
 subst = cv.createBackgroundSubtractorMOG2(detectShadows = True)
 is_trackbar_launched = False
+window_name = "Background Subst"
 
 def on_learning_rate_trackbar(val):
     global learning_rate 
@@ -10,12 +11,12 @@ def on_learning_rate_trackbar(val):
 
 
 def launch_learning_rate_trackbar():
-    window_name = "Learning Rate"
+    global window_name
     position = (700, 20)
-    cv.namedWindow(window_name, cv.WINDOW_NORMAL)
-    cv.resizeWindow(window_name, 300, 30)
+    cv.namedWindow(window_name, cv.WINDOW_AUTOSIZE)
+    # cv.resizeWindow(window_name, 300, 30)
     cv.moveWindow(window_name, position[0], position[1])
-    cv.createTrackbar("Learning rate * 10000", "Learning Rate", 200, 1000,
+    cv.createTrackbar("Learning rate * 10000", window_name, 200, 1000,
         on_learning_rate_trackbar)
   
 # mat : px matrix

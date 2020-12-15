@@ -41,11 +41,15 @@ while True:
     cv.imshow('Frame', frame)
     
     # Substracting background
-    roi = bg_subst.apply(roi)
+    fg_mask = bg_subst.apply(roi)
 
+    # Thresholding
+    thresh = cv.th
+    
+    # Finding contours
+    
 
-
-    cv.imshow("Learning Rate", roi)
+    cv.imshow(bg_subst.window_name, fg_mask)
 
     keyboard = cv.waitKey(1)
     if keyboard & 0xFF == ord('q'):
