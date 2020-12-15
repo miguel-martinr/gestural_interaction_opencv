@@ -1,30 +1,16 @@
 import numpy as np
 import cv2 as cv
+import bg_substractor as bg_subst
 
 learning_rate = -1
 
-# Learning rate trackbar callback function
-def on_learning_rate_trackbar(val):
-    global learning_rate 
-    learning_rate = val / 10000
-
-
-def launch_learning_rate_trackbar():
-    window_name = "Learning Rate"
-    position = (700, 20)
-    cv.namedWindow(window_name, cv.WINDOW_NORMAL)
-    cv.resizeWindow(window_name, 300, 30)
-    cv.moveWindow(window_name, position[0], position[1])
-    cv.createTrackbar("Learning rate * 10000", "Learning Rate", 200, 10000,
-        on_learning_rate_trackbar)
-    
-    
 
 
 
 
-cap = cv.VideoCapture(1)
-backSub = cv.createBackgroundSubtractorMOG2(detectShadows = True)
+
+cap = cv.VideoCapture("http://192.168.1.51:4747/mjpegfeed?640x480")
+
 
 
 if not cap.isOpened():
@@ -38,7 +24,7 @@ down_right = (550, 350)
 
 
 
-launch_learning_rate_trackbar()
+# launch_learning_rate_trackbar()
 
 while True:
     ret, frame = cap.read()
@@ -55,16 +41,19 @@ while True:
     cv.imshow('Frame', frame)
     
     # Substracting background
-    roi = backSub.apply(roi, None, learning_rate)
-    # print("Lr: ", learning_rate)
-    cv.imshow('Roi', roi)
+    roi = bg_subst.apply(roi)
+
+
+
+    cv.imshow("Learning Rate", roi)
 
     keyboard = cv.waitKey(1)
     if keyboard & 0xFF == ord('q'):
         break
 
-cap.release()
 
+
+cap.release()
 cv.destroyAllWindows()
 
 
