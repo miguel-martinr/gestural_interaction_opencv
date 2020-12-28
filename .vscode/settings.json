@@ -1,5 +1,11 @@
 {
   "python.linting.pylintEnabled": true,
   "python.linting.enabled": true,
-  "python.pythonPath": "C:\\Users\\migue\\AppData\\Local\\Programs\\Python\\Python39\\python.exe"
+  "python.pythonPath": "/bin/python3",
+  "python.linting.pylintArgs": ["--generate-members"],
+    "python.analysis.memory.keepLibraryAst": true,
+    "python.defaultInterpreterPath": "/usr/bin/python3",
+    "python.autoComplete.extraPaths": [
+     "/usr/local/lib/python3.8/dist-packages/cv2/python-3.8"
+    ]
 }

@@ -55,9 +55,10 @@ while True:
 
     # Getting convex hull
     if len(contours) > 0:
-        hull = cv2.convexHull(contours[0])
+        hull = cv2.convexHull(contours[0], returnPoints=False)
         cv2.drawContours(roi, [hull], 0, (255, 0, 0), 3)
 
+        
 
     cv2.imshow("ROI", roi)
     cv2.imshow("Thresh", thresh)
