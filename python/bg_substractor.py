@@ -10,7 +10,11 @@ learning_rate_window_name = "Learning Rate"
 
 def on_learning_rate_trackbar(val):
     global learning_rate
-    learning_rate = val / 10000
+    if val < trackbar_max / 2 and val != 0:
+        learning_rate = -1
+    else:
+        learning_rate = val / trackbar_max * 10
+
     blank_background = np.zeros((50, 320, 3), np.uint8)
     cv2.putText(blank_background, "Learning rate : " + str(learning_rate), (5, 25), 
         cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0))
@@ -25,6 +29,7 @@ def launch_learning_rate_trackbar():
     cv2.moveWindow(learning_rate_window_name, position[0], position[1])
     cv2.createTrackbar("Learning rate * 10000", learning_rate_window_name, 
         trackbar_def, 1000, on_learning_rate_trackbar)
+       
     on_learning_rate_trackbar(trackbar_def)
   
 # mat : px matrix
