@@ -86,6 +86,15 @@ while True:
     # Getting convex hull 
     if len(contours) > 0:
         cnt = contours[cnt_index]
+
+        # Getting bounding rectangle
+        rect = cv2.boundingRect(cnt)
+        pt1 = (rect[0],rect[1])
+        pt2 = (rect[0]+rect[2],rect[1]+rect[3])
+        print ("Altura: " + str(rect[3]))
+        
+        cv2.rectangle(roi,pt1,pt2,(0,0,255),3)
+
         hull = cv2.convexHull(cnt, returnPoints=False)
         # make hull index monotonous
         hull.sort(0)
@@ -103,7 +112,9 @@ while True:
                 ang = angle(start,end,far)
 
                 # Filtering defects
-                if ang < 90 and d > 10000:
+                # La relación entre la distancia y la altura del rect
+                # permite reconocer distintos tamaños de mano.
+                if ang < 90 and (d / rect[3]) > 70:
                     fingers_j += 1
                     print(d)
                     cv2.line(roi,start,end,[255,0,0],2)
