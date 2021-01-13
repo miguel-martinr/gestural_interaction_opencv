@@ -34,7 +34,7 @@ show_filtered_conv_defects =  False or show_filtered_lines
 show_filtered_middle_points = False or show_filtered_lines
 
 ##################################################################################################
-use_camera = False
+use_camera = True
 
 ##################################################################################################
 
