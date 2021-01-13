@@ -33,6 +33,8 @@ show_bounding_rect = False or show_filtered_lines
 show_filtered_conv_defects =  False or show_filtered_lines
 show_filtered_middle_points = False or show_filtered_lines
 
+
+show_fg_mask = True
 ##################################################################################################
 use_camera = True
 
@@ -125,25 +127,23 @@ while True:
                 # La relación entre la distancia de far a la malla y la altura del rect
                 # permite filtrar los defectos entre los dedos.
                 depth_heigh_rel = depth / rect[3]
-                # print("Rel: ", depth_heigh_rel)
-
-                #Relación entre la altura y anchura del boundingRect
-                # print("BR_rel: ", rect[3] / rect[2])
+             
                 if ang < 90 and 0.25 < depth_heigh_rel < 0.5:
                     fingers_j += 1
                     
-                    # Dibuja la línea entre f y hull 
-                    middle_point = (int((end[0] - start[0])/2) + start[0], int((end[1] - start[1])/2) + start[1])
-                    
                     if show_filtered_middle_points:
+                        # Dibuja la línea recta entre f y el punto medio 
+                        # entre start y end
+                        middle_point = (int((end[0] - start[0])/2) + start[0], int((end[1] - start[1])/2) + start[1])
                         cv2.line(roi, far, middle_point, [0,255,0],2)
 
 
                     if show_filtered_conv_defects:
+                        # Muestra defectos de convexidad filtrados
                         cv2.line(roi,start,end,[255,0,0],2)
                         cv2.circle(roi,far,5,[0,0,255],-1)
 
-                blank_background = np.ones((50, 320, 3), np.uint8)
+                blank_background = np.ones((50, 320, 3), np.float)
                 cv2.namedWindow("Datos", cv2.WINDOW_AUTOSIZE)
                 cv2.putText(blank_background, "Dedos levantados: " + str(fings_up.calc(fingers_j, rect)), (5,25),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0))
@@ -156,8 +156,10 @@ while True:
 
     cv2.imshow("ROI", roi)
     cv2.moveWindow("ROI", 100, 200)
-    cv2.imshow("FG_Mask", fg_mask)
-    cv2.moveWindow("FG_Mask", 100, 450)
+
+    if show_fg_mask:
+        cv2.imshow("FG_Mask", fg_mask)
+        cv2.moveWindow("FG_Mask", 100, 450)
     
     if use_camera:
         wait_time = 1
