@@ -1,5 +1,5 @@
 def calc(finger_joins, hand_bounding_rect):
-
+    # Error
     if finger_joins < 0:
       return -1
 
@@ -18,5 +18,5 @@ def calc(finger_joins, hand_bounding_rect):
     if 1.8 <= h_w_relation <= 2.3:
         return 1
     
-    # Some error
+
     return 0

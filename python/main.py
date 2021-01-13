@@ -28,19 +28,22 @@ def larger_contour_index_of(contours):
 
 
 ##################################################################################################
-show_filtered_lines = False
+show_filtered_lines = True
 show_bounding_rect = False or show_filtered_lines
 show_filtered_conv_defects =  False or show_filtered_lines
 show_filtered_middle_points = False or show_filtered_lines
 
 ##################################################################################################
+use_camera = False
+
+##################################################################################################
 
 
+if use_camera:
+    vid_src = "http://192.168.1.51:4747/mjpegfeed?640x480"
+else:
+    vid_src = "test.avi"
 
-
-
-vid_src = "http://192.168.1.51:4747/mjpegfeed?640x480"
-# vid_src = "test.avi"
 cap = cv2.VideoCapture(vid_src)
 
 
@@ -64,7 +67,9 @@ while True:
         print("Can't receive frame. Exiting...")
         exit(0)
 
-    frame = cv2.flip(frame, 1)
+    if use_camera:
+        frame = cv2.flip(frame, 1)
+
     roi = frame[up_left[1]:down_right[1], 
         up_left[0]:down_right[0], :]
 
@@ -153,7 +158,13 @@ while True:
     cv2.moveWindow("ROI", 100, 200)
     cv2.imshow("FG_Mask", fg_mask)
     cv2.moveWindow("FG_Mask", 100, 450)
-    keyboard = cv2.waitKey(1)
+    
+    if use_camera:
+        wait_time = 1
+    else:
+        wait_time = 25
+
+    keyboard = cv2.waitKey(wait_time)
     if keyboard & 0xFF == ord('q'):
         break
 
