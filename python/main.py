@@ -3,6 +3,9 @@ import cv2
 import bg_substractor as bg_subst
 import fingers_up as fings_up
 import math
+import drawing
+
+import tkinter
 
 def angle(s,e,f):
     v1 = [s[0]-f[0],s[1]-f[1]]
@@ -37,6 +40,7 @@ show_filtered_middle_points = False or show_filtered_lines
 show_fg_mask = True
 ##################################################################################################
 use_camera = True
+drawing_mode = True
 
 ##################################################################################################
 
@@ -59,8 +63,12 @@ if not cap.isOpened():
 up_left = (400, 100)
 down_right = (600, 300)
 
+# Drawing layer
+# def get_blank_layer(r = 200, c = 200):
+#     return np.full((200,200, 3), 255, np.uint8)
 
-
+drawing_board = drawing.get_board()
+cur_color = drawing.black
 
 
 while True:
@@ -74,6 +82,8 @@ while True:
 
     roi = frame[up_left[1]:down_right[1], 
         up_left[0]:down_right[0], :]
+    
+
 
     
     cv2.rectangle(frame, up_left, down_right, (255,0,0))
@@ -131,10 +141,10 @@ while True:
                 if ang < 90 and 0.25 < depth_heigh_rel < 0.5:
                     fingers_j += 1
                     
+                    middle_point = (int((end[0] - start[0])/2) + start[0], int((end[1] - start[1])/2) + start[1])
                     if show_filtered_middle_points:
                         # Dibuja la línea recta entre f y el punto medio 
                         # entre start y end
-                        middle_point = (int((end[0] - start[0])/2) + start[0], int((end[1] - start[1])/2) + start[1])
                         cv2.line(roi, far, middle_point, [0,255,0],2)
 
 
@@ -142,12 +152,28 @@ while True:
                         # Muestra defectos de convexidad filtrados
                         cv2.line(roi,start,end,[255,0,0],2)
                         cv2.circle(roi,far,5,[0,0,255],-1)
-
+                
+                # Imprime cuantos dedos levantados hay
                 blank_background = np.ones((50, 320, 3), np.float)
                 cv2.namedWindow("Datos", cv2.WINDOW_AUTOSIZE)
-                cv2.putText(blank_background, "Dedos levantados: " + str(fings_up.calc(fingers_j, rect)), (5,25),
+                fingers_up = fings_up.calc(fingers_j, rect)
+                cv2.putText(blank_background, "Dedos levantados: " + str(fingers_up), (5,25),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0))
                 cv2.imshow("Datos", blank_background)
+
+                if drawing_mode:
+
+                    drawing.draw_color_menu(roi)
+                    # Drawing
+                    if fingers_up == 2: 
+                        # Selecting color
+                        new_color = drawing.get_color(middle_point, cur_color)                        
+                        if new_color != cur_color:
+                            cur_color = new_color
+                        cv2.circle(drawing_board, middle_point, 3, cur_color, -1)
+                        cv2.imshow("Whiteboard", drawing_board)
+                        cv2.moveWindow("Whiteboard", 700, 175)
+
 
           
         
@@ -169,6 +195,11 @@ while True:
     keyboard = cv2.waitKey(wait_time)
     if keyboard & 0xFF == ord('q'):
         break
+    if keyboard & 0xFF == ord('r'):
+        print("reset")
+        drawing_board = drawing.get_board()
+        cv2.imshow("Whiteboard", drawing_board)
+
 
 
 
