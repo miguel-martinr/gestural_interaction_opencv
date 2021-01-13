@@ -1,6 +1,7 @@
 import numpy as np
 import cv2
 import bg_substractor as bg_subst
+import fingers_up as fings_up
 import math
 
 def angle(s,e,f):
@@ -25,15 +26,18 @@ def larger_contour_index_of(contours):
             larger_cnt_index = i
     return larger_cnt_index
 
-def calculate_fingers(fingers_j):
-    if fingers_j == 0 or fingers_j < 0:
-        return 0
-    
-    fingers_up = fingers_j + 1
-    if fingers_up > 5:
-      fingers_up = 5
-      
-    return fingers_up
+
+##################################################################################################
+show_filtered_lines = False
+show_bounding_rect = False or show_filtered_lines
+show_filtered_conv_defects =  False or show_filtered_lines
+show_filtered_middle_points = False or show_filtered_lines
+
+##################################################################################################
+
+
+
+
 
 vid_src = "http://192.168.1.51:4747/mjpegfeed?640x480"
 # vid_src = "test.avi"
@@ -91,9 +95,10 @@ while True:
         rect = cv2.boundingRect(cnt)
         pt1 = (rect[0],rect[1])
         pt2 = (rect[0]+rect[2],rect[1]+rect[3])
-        print ("Altura: " + str(rect[3]))
+        # print ("Altura: " + str(rect[3]))
         
-        cv2.rectangle(roi,pt1,pt2,(0,0,255),3)
+        if show_bounding_rect:
+            cv2.rectangle(roi,pt1,pt2,(0,0,255),3)
 
         hull = cv2.convexHull(cnt, returnPoints=False)
         # make hull index monotonous
@@ -110,19 +115,32 @@ while True:
                 depth = d/256.0
                 # print(depth)
                 ang = angle(start,end,far)
-
+                
                 # Filtering defects
-                # La relación entre la distancia y la altura del rect
-                # permite reconocer distintos tamaños de mano.
-                if ang < 90 and (d / rect[3]) > 70:
+                # La relación entre la distancia de far a la malla y la altura del rect
+                # permite filtrar los defectos entre los dedos.
+                depth_heigh_rel = depth / rect[3]
+                # print("Rel: ", depth_heigh_rel)
+
+                #Relación entre la altura y anchura del boundingRect
+                # print("BR_rel: ", rect[3] / rect[2])
+                if ang < 90 and 0.25 < depth_heigh_rel < 0.5:
                     fingers_j += 1
-                    print(d)
-                    cv2.line(roi,start,end,[255,0,0],2)
-                    cv2.circle(roi,far,5,[0,0,255],-1)
+                    
+                    # Dibuja la línea entre f y hull 
+                    middle_point = (int((end[0] - start[0])/2) + start[0], int((end[1] - start[1])/2) + start[1])
+                    
+                    if show_filtered_middle_points:
+                        cv2.line(roi, far, middle_point, [0,255,0],2)
+
+
+                    if show_filtered_conv_defects:
+                        cv2.line(roi,start,end,[255,0,0],2)
+                        cv2.circle(roi,far,5,[0,0,255],-1)
 
                 blank_background = np.ones((50, 320, 3), np.uint8)
                 cv2.namedWindow("Datos", cv2.WINDOW_AUTOSIZE)
-                cv2.putText(blank_background, "Dedos levantados: " + str(calculate_fingers(fingers_j)), (5,25),
+                cv2.putText(blank_background, "Dedos levantados: " + str(fings_up.calc(fingers_j, rect)), (5,25),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0))
                 cv2.imshow("Datos", blank_background)
 
@@ -138,6 +156,7 @@ while True:
     keyboard = cv2.waitKey(1)
     if keyboard & 0xFF == ord('q'):
         break
+
 
 
 
