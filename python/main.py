@@ -57,7 +57,7 @@ def is_lml_gesture(fingers_up, defects):
 
 def is_alien_salute(fingers_up, defects):
     # Four finger alien salute 
-    if len(defects) == 3:
+    if len(defects) == 3 and fingers_up == 4:
         count_alien_angs = 0
         i = 0
         for defect in defects:
@@ -96,8 +96,8 @@ mode_changed = False
 
 # Selecting img source
 if use_camera:
-    vid_src = "http://192.168.1.51:4747/mjpegfeed?640x480"
-      # vid_src = 1
+    # vid_src = "http://192.168.1.51:4747/mjpegfeed?640x480"
+    vid_src = 1
 else:
     vid_src = "test.avi"
 cap = cv2.VideoCapture(vid_src)
