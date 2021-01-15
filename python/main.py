@@ -86,6 +86,8 @@ def is_lml_gesture(fingers_up, defects):
             return True
     return False
 
+### Identifica gesto de saludo alien de cuatro dedos
+# defect = (start, end, far, depth, ang)
 def is_alien_salute(fingers_up, defects):
     # Four finger alien salute 
     if len(defects) == 3 and fingers_up == 4:
