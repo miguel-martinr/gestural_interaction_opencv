@@ -3,14 +3,13 @@ def calc(finger_joins, hand_bounding_rect):
     if finger_joins < 0:
       return -1
 
-    if finger_joins >= 1:
-      return finger_joins + 1
-
     hand_height = hand_bounding_rect[3]
     hand_width = hand_bounding_rect[2]
     h_w_relation = hand_height / hand_width
-    w_h_relation = hand_width / hand_height
     # print(h_w_relation)
+
+    if finger_joins >= 1 and h_w_relation > 1.0:
+      return finger_joins + 1
     
     # Closed hand
     if 0.8 <= h_w_relation  <= 1.15: 

@@ -5,18 +5,19 @@ red = [0,0,255]
 green = [0,255,0]
 blue = [255,0,0]
 black = [0,0,0]
+purple = [128,0,128]
 
 def get_blank_layer(r = 200, c = 200):
     return np.full((r,c, 3), 255, np.uint8)
 
 
-def draw_color_menu(img):
+def draw_color_menu(img, up_left = (0,0)):
     # Red area
-    cv2.rectangle(img, (0,0), (25,25), red, -1)
+    cv2.rectangle(img, (up_left[0], up_left[1]), (up_left[0] + 25, up_left[1] + 25), red, -1)
     # Green Area
-    cv2.rectangle(img, (0,25), (25,50), green, -1)
+    cv2.rectangle(img, (up_left[0], up_left[1] + 25), (up_left[0] + 25, up_left[1] + 50), green, -1)
     # Blue Area
-    cv2.rectangle(img, (0,50), (25,75), blue, -1)
+    cv2.rectangle(img, (up_left[0], up_left[1] + 50), (up_left[0] + 25, up_left[1] + 75), blue, -1)
 
 def get_board():
     img = get_blank_layer()
