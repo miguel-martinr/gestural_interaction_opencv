@@ -24,12 +24,15 @@ def draw_color_menu(img, up_left = (0,0)):
 
 def get_color(point, current_color):
     if 0 <= point[0] <= 25:
-         if 0 <= point[1] <= 25:
-            return [0,0,255]
-         if 25 < point[1] <= 50:
-            return [0,255,0]
-         if 50 < point[1] <= 75:
-            return [255,0,0]
+        # Pointer is on red area
+        if 0 <= point[1] <= 25:
+            return red
+        # Pointer is on green area
+        if 25 < point[1] <= 50:
+            return green
+        # Pointer is on blue area
+        if 50 < point[1] <= 75:
+            return blue
     
     return current_color
      

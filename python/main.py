@@ -14,7 +14,6 @@
 import numpy as np
 import cv2
 import bg_substractor as bg_subst
-import fingers_up as fings_up
 import math
 import drawing
 
@@ -105,9 +104,9 @@ def is_alien_salute(fingers_up, defects):
 
 ##################################################################################################
 show_fg_mask = True
-show_roi = True
+show_roi = False
 
-show_filtered_lines = True
+show_filtered_lines = False
 show_bounding_rect = False or show_filtered_lines
 show_filtered_conv_defects =  False or show_filtered_lines
 show_filtered_middle_points = False or show_filtered_lines
