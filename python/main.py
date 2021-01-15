@@ -45,6 +45,38 @@ def larger_contour_index_of(contours):
     return larger_cnt_index
 
 
+### Devuelve el número de dedos levantadas
+# finger_joins : nº de uniones de dedos
+# hand_bounding_rect : bounding rectangle de la mano
+#   La forma de hand_bounding_rect es (X, Y, width, height)
+#   donde (X,Y) es la esquina superior izquierda del mismo.
+def num_of_fingers_up(finger_joins, hand_bounding_rect):
+    # Error
+    if finger_joins < 0:
+      return -1
+
+    hand_height = hand_bounding_rect[3]
+    hand_width = hand_bounding_rect[2]
+    h_w_relation = hand_height / hand_width
+    # print(h_w_relation)
+
+    if finger_joins >= 1 and h_w_relation > 1.0:
+      return finger_joins + 1
+    
+    # Closed hand
+    if finger_joins == 0 and 0.8 <= h_w_relation  <= 1.15: 
+        return 0
+    # One finger up (vertical)
+    if finger_joins == 0 and 1.6 <= h_w_relation <= 2.4:
+        return 1
+
+    # Horizontal thumb up
+    if 0.5 <= h_w_relation < 0.8:
+        return 1
+    
+
+    return 0
+
 ### Identifica gesto de rock "lml"
 # defect = (start, end, far, depth, ang)
 def is_lml_gesture(fingers_up, defects):
@@ -234,7 +266,7 @@ while keep_running:
                     if rect[3] / roi_h < 0.2:
                         fingers_up = 0
                     else:
-                        fingers_up = fings_up.calc(fingers_j, rect)
+                        fingers_up = num_of_fingers_up(fingers_j, rect)
                     
                     # Gestures mode
                     if gestures_mode:
