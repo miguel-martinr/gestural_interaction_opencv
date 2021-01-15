@@ -45,9 +45,35 @@ def larger_contour_index_of(contours):
     return larger_cnt_index
 
 
+### Identifica gesto de rock "lml"
+# defect = (start, end, far, depth, ang)
+def is_lml_gesture(fingers_up, defects):
+    # lml
+    if len(defects) == 1:
+        defect = defects[0]
+        if fingers_up == 2 and 90 <= defect[0][0] - defect[1][0] <= 110:
+            return True
+    return False
+
+def is_alien_salute(fingers_up, defects):
+    # Four finger alien salute 
+    if len(defects) == 3:
+        count_alien_angs = 0
+        i = 0
+        for defect in defects:
+            i += 1
+            if 45 <= defect[4] <= 82:
+                count_alien_angs += 1
+        if count_alien_angs == 3:
+            return True
+    return False
+
+
+
+
 ##################################################################################################
 show_fg_mask = True
-show_roi = False
+show_roi = True
 
 show_filtered_lines = True
 show_bounding_rect = False or show_filtered_lines
@@ -56,8 +82,11 @@ show_filtered_middle_points = False or show_filtered_lines
 
 
 ##################################################################################################
+### MODES
+drawing_mode = False
+gestures_mode = True
+
 use_camera = True 
-drawing_mode = True
 use_white_board = False
 keep_running = True
 mode_changed = False
@@ -168,7 +197,9 @@ while keep_running:
 
             # Getting convexity defects
             defects = cv2.convexityDefects(cnt, hull) 
+
             if defects is not None:
+                filtered_defects = []
                 for i in range(len(defects)):
                     s,e,f,d = defects[i,0]
                     start = tuple(cnt[s][0])
@@ -183,9 +214,10 @@ while keep_running:
                     depth_heigh_rel = depth / rect[3]
                     
                     
-                    if ang < 90 and 0.25 < depth_heigh_rel < 0.8:
+                    if ang < 90 and 0.25 < depth_heigh_rel < 0.8: # Lo aumenté de 0.5 a 0.8 para permitir dibujar mejor
                         fingers_j += 1
-                        
+                        # print(ang)
+                        filtered_defects.append((start,end,far,depth, ang))
                         middle_point = (int((end[0] - start[0])/2) + start[0], int((end[1] - start[1])/2) + start[1])
                         if show_filtered_middle_points:
                             # Dibuja la línea recta entre f y el punto medio 
@@ -204,7 +236,14 @@ while keep_running:
                     else:
                         fingers_up = fings_up.calc(fingers_j, rect)
                     
-                        
+                    # Gestures mode
+                    if gestures_mode:
+                        if is_lml_gesture(fingers_up, filtered_defects):
+                            print("ROCK")
+                        elif is_alien_salute(fingers_up, filtered_defects):
+                            print("ALIEN HELLO")
+
+
                     if not drawing_mode:
                         # Imprime cuantos dedos levantados hay
                         data_win_name = "Datos"
