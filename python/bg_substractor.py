@@ -46,7 +46,7 @@ def init():
     global first_time 
     global is_trackbar_launched
     is_trackbar_launched = False
-    instant = 1
+    instant = -1
     ready = False
     first_time = True
 
@@ -97,8 +97,8 @@ def apply(mat):
             learning_rate = -1
             instant = time.time()
             first_time = False
+        
         blank_background = np.full((50,320,3), 255, np.uint8)
-   
         cv2.putText(blank_background, adjustment_msg + str(secs_to_wait - int(time.time() - instant)), (5, 25), 
         cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0))
         cv2.imshow(learning_rate_window_name, blank_background)

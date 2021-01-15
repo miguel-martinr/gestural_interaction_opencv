@@ -92,9 +92,7 @@ def is_alien_salute(fingers_up, defects):
     # Four finger alien salute 
     if len(defects) == 3 and fingers_up == 4:
         count_alien_angs = 0
-        i = 0
         for defect in defects:
-            i += 1
             if 45 <= defect[4] <= 82:
                 count_alien_angs += 1
         if count_alien_angs == 3:
@@ -105,7 +103,7 @@ def is_alien_salute(fingers_up, defects):
 
 
 ##################################################################################################
-show_fg_mask = True
+show_fg_mask = False
 show_roi = False
 
 show_filtered_lines = False
@@ -116,11 +114,11 @@ show_filtered_middle_points = False or show_filtered_lines
 
 ##################################################################################################
 ### MODES
-drawing_mode = False
-gestures_mode = True
+drawing_mode = True
+gestures_mode = False
 
 use_camera = True 
-use_white_board = False
+use_white_board = True
 keep_running = True
 mode_changed = False
 
@@ -295,6 +293,7 @@ while keep_running:
                                 cv2.circle(frame, (up_left[0] + middle_point[0], up_left[1] + middle_point[1]), 3, drawing.purple, -1)                 
                                 cv2.circle(drawing_board, middle_point, 3, cur_color, -1)
                                 cv2.imshow("Whiteboard", drawing_board)
+                                cv2.imshow("Frame", frame)
                                 cv2.moveWindow("Whiteboard", 800, 300)
                             else:
                                 point = (up_left[0] + middle_point[0], up_left[1] + middle_point[1])
