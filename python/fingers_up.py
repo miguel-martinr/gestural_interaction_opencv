@@ -12,14 +12,14 @@ def calc(finger_joins, hand_bounding_rect):
       return finger_joins + 1
     
     # Closed hand
-    if 0.8 <= h_w_relation  <= 1.15: 
+    if finger_joins == 0 and 0.8 <= h_w_relation  <= 1.15: 
         return 0
-    # One finger up
-    if 1.7 <= h_w_relation <= 2.3:
+    # One finger up (vertical)
+    if finger_joins == 0 and 1.6 <= h_w_relation <= 2.4:
         return 1
 
     # Horizontal thumb up
-    if 0.5 <= h_w_relation <= 0.8:
+    if 0.5 <= h_w_relation < 0.8:
         return 1
     
 

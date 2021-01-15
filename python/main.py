@@ -47,7 +47,7 @@ def larger_contour_index_of(contours):
 
 ##################################################################################################
 show_fg_mask = True
-show_roi = True
+show_roi = False
 
 show_filtered_lines = True
 show_bounding_rect = False or show_filtered_lines
@@ -68,6 +68,7 @@ mode_changed = False
 # Selecting img source
 if use_camera:
     vid_src = "http://192.168.1.51:4747/mjpegfeed?640x480"
+      # vid_src = 1
 else:
     vid_src = "test.avi"
 cap = cv2.VideoCapture(vid_src)
@@ -78,25 +79,33 @@ if not cap.isOpened():
    exit(0)
 
 bg_subst.init()
+
+
+# Roi Region of interest points
+up_left = (400, 100)
+down_right = (600, 300)
+roi_h = down_right[1] - up_left[1] 
+roi_w = down_right[0] - up_left[0]
+
+
 while keep_running:
 
 
     if mode_changed:
         mode_changed = False
 
-
-    # Roi Region of interest points
-    up_left = (400, 100)
-    down_right = (600, 300)
-
-
     if drawing_mode:
-        # Initializing blank drawing board
-        drawing_board = drawing.get_board()
+        
         # Color inicial del puntero para dibujar
         cur_color = drawing.black
+
+        # Si no se usa la pizarra, se dibujará sobre la propia imagen
+        # por lo que draw_points almacenará los puntos por donde pase el cursor
         if not use_white_board:
             draw_points = []
+        else:
+            # En el caso contrario se dibujará sobre un lienzo blanco
+            drawing_board = drawing.get_board()
 
 
     while keep_running and not mode_changed:
@@ -116,8 +125,7 @@ while keep_running:
 
         
         cv2.rectangle(frame, up_left, down_right, (255,0,0))
-        if not drawing_mode:
-            cv2.imshow('Frame', frame)
+        
         
         # Substracting background
         fg_mask = bg_subst.apply(roi)
@@ -136,6 +144,7 @@ while keep_running:
             # Draws color menu
             drawing.draw_color_menu(frame, up_left)
 
+        cv2.imshow('Frame', frame)
 
         # Fingers joints
         fingers_j = 0
@@ -172,8 +181,9 @@ while keep_running:
                     # La relación entre la distancia de far a la malla y la altura del rect
                     # permite filtrar los defectos entre los dedos.
                     depth_heigh_rel = depth / rect[3]
-                
-                    if ang < 90 and 0.25 < depth_heigh_rel < 0.5:
+                    
+                    
+                    if ang < 90 and 0.25 < depth_heigh_rel < 0.8:
                         fingers_j += 1
                         
                         middle_point = (int((end[0] - start[0])/2) + start[0], int((end[1] - start[1])/2) + start[1])
@@ -188,7 +198,13 @@ while keep_running:
                             cv2.line(roi,start,end,[255,0,0],2)
                             cv2.circle(roi,far,5,[0,0,255],-1)
                     
-                    fingers_up = fings_up.calc(fingers_j, rect)
+                    # Filtramos pequeños defectos ocasionados por sombras
+                    if rect[3] / roi_h < 0.2:
+                        fingers_up = 0
+                    else:
+                        fingers_up = fings_up.calc(fingers_j, rect)
+                    
+                        
                     if not drawing_mode:
                         # Imprime cuantos dedos levantados hay
                         data_win_name = "Datos"
@@ -198,10 +214,8 @@ while keep_running:
                             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0))
                         cv2.imshow(data_win_name, blank_background)
                         cv2.moveWindow(data_win_name, 800, 200)
-
-                    if drawing_mode:
- 
-                        if fingers_up == 2: 
+                    else:
+                        if fingers_j == 1: 
                             # Selecting color
                             cur_color = drawing.get_color(middle_point, cur_color)   
                             # Drawing    
@@ -212,9 +226,8 @@ while keep_running:
                                 cv2.moveWindow("Whiteboard", 800, 300)
                             else:
                                 point = (up_left[0] + middle_point[0], up_left[1] + middle_point[1])
-                                if up_left[0] <= point[0] <= up_left[0] + 25 and up_left[1] <= point[1] <= up_left[1] + 75:
-                                    cv2.circle(frame, point, 3, drawing.purple, -1)
-                                    print("PURPLE")
+                                if 0 <= middle_point[0] <= 25 and 0 <= middle_point[1] <= 75:
+                                    cv2.circle(frame, point, 3, drawing.purple, -1)  
                                 else:
                                     draw_points.append((point, cur_color))
         if drawing_mode and not use_white_board:
@@ -232,7 +245,7 @@ while keep_running:
             cv2.imshow("FG_Mask", fg_mask)
             cv2.moveWindow("FG_Mask", 100, 450)
         
-        if drawing_mode: 
+        if drawing_mode and not use_white_board: 
             cv2.imshow('Frame', frame)
 
 

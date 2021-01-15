@@ -1,15 +1,17 @@
 import numpy as np
 import cv2
 
+
+# Colores
 red = [0,0,255]
 green = [0,255,0]
 blue = [255,0,0]
 black = [0,0,0]
 purple = [128,0,128]
 
-def get_blank_layer(r = 200, c = 200):
-    return np.full((r,c, 3), 255, np.uint8)
-
+# Devuelve 
+def get_board(height = 200, width = 200):
+    return np.full((height, width, 3), 255, np.uint8)
 
 def draw_color_menu(img, up_left = (0,0)):
     # Red area
@@ -19,10 +21,6 @@ def draw_color_menu(img, up_left = (0,0)):
     # Blue Area
     cv2.rectangle(img, (up_left[0], up_left[1] + 50), (up_left[0] + 25, up_left[1] + 75), blue, -1)
 
-def get_board():
-    img = get_blank_layer()
-    # draw_color_menu(img)
-    return img
 
 def get_color(point, current_color):
     if 0 <= point[0] <= 25:
@@ -36,14 +34,3 @@ def get_color(point, current_color):
     return current_color
      
 
-# img = get_board()
-
-# while True:
-
-#     cv2.imshow("foo", img)
-#     wait_time = 1
-#     keyboard = cv2.waitKey(wait_time)
-#     if keyboard & 0xFF == ord('q'):
-#         break
-
-# cv2.destroyAllWindows()  

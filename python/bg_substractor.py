@@ -2,35 +2,56 @@ import cv2
 import time
 import numpy as np
 
-# Learning Rate adjustment
+### Learning Rate adjustment
+# Indica que ya ha pasado el tiempo de espera
 ready = False
+
+# Indica que hay que empezar el ajuste del fondo
 first_time = True
+
+# Se usa para saber el momento en el que se inicia el ajuste
 instant = -1 
+
+# Segundos de espera para el ajuste
 secs_to_wait = 4.0
+
+# Mensaje que se muestra cuando se está ajustando
 adjustment_msg = "Ajustando, por favor espera..."
 
 
 
-# Learning Rate Trackbar parameters
+### Learning Rate Trackbar parameters
+
+# Valor que tendrá el trackbar al lanzarlo
 trackbar_def = 0
+
+# Valor máximo del trackbar
 trackbar_max = 1000
+
+# Valor que tendrá el learning_rate al lanzar el trackbar
+# El máximo valor que podrá tener el learning rate es 1000 / 10000 = 0.1
+# Por lo que el rango para elegir será [0, 0.1]
 learning_rate = trackbar_def / 10000
+
 subst = cv2.createBackgroundSubtractorMOG2(detectShadows = True)
 is_trackbar_launched = False
 learning_rate_window_name = "Learning Rate"
 position = (800, 100)
 
+
+# Vuelve a inicializar las variables para ajustar el fondo de nuevo
 def init():
     global instant
     global ready
     global first_time 
     global is_trackbar_launched
     is_trackbar_launched = False
-    instant = -1
+    instant = 1
     ready = False
     first_time = True
 
 
+# Función que se invoca cuando se usa el trackbar (cambia el valor del learning_rate)
 def on_learning_rate_trackbar(val):
     global learning_rate
     learning_rate = val / 1000
@@ -43,6 +64,7 @@ def on_learning_rate_trackbar(val):
     cv2.moveWindow(learning_rate_window_name, position[0], position[1])
 
 
+# Lanza la ventana con el trackbar
 def launch_learning_rate_trackbar():
     global learning_rate_window_name
     global position
@@ -53,6 +75,9 @@ def launch_learning_rate_trackbar():
        
     on_learning_rate_trackbar(trackbar_def)
   
+
+# Empieza el ajuste (si es el caso) y retorna el resultado 
+# de llamar bg_subst.apply(mat)
 # mat : px matrix
 def apply(mat):
     global ready
