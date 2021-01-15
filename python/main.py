@@ -103,7 +103,7 @@ def is_alien_salute(fingers_up, defects):
 
 
 ##################################################################################################
-show_fg_mask = False
+show_fg_mask = True
 show_roi = False
 
 show_filtered_lines = False
@@ -118,7 +118,7 @@ drawing_mode = True
 gestures_mode = False
 
 use_camera = True 
-use_white_board = True
+use_white_board = False
 keep_running = True
 mode_changed = False
 
